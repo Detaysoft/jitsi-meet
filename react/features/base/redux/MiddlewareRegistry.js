@@ -9,6 +9,7 @@ import type { Middleware } from 'redux';
  */
 class MiddlewareRegistry {
     _elements: Array<Middleware<*, *>>;
+    _elements2: Array<Middleware<*, *>>;
 
     /**
      * Creates a MiddlewareRegistry instance.
@@ -21,6 +22,8 @@ class MiddlewareRegistry {
          * @type {Middleware[]}
          */
         this._elements = [];
+
+        this._elements2 = [];
     }
 
     /**
@@ -36,6 +39,7 @@ class MiddlewareRegistry {
         // satisfy flow.
         const middlewares = [
             ...this._elements,
+            ...this._elements2,
             ...additional
         ];
 
@@ -52,6 +56,18 @@ class MiddlewareRegistry {
      */
     register(middleware: Middleware<*, *>) {
         this._elements.push(middleware);
+    }
+
+    /**
+     * Adds a middleware to the registry.
+     *
+     * The method is to be invoked only before {@link #applyMiddleware()}.
+     *
+     * @param {Middleware} middleware - A Redux middleware.
+     * @returns {void}
+     */
+    register2(middleware: Middleware<*, *>) {
+        this._elements2.push(middleware);
     }
 }
 

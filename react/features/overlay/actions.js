@@ -2,6 +2,8 @@ import { appNavigate, reloadWithStoredParams } from '../app';
 import { toURLString } from '../base/util';
 
 import {
+    CANCEL_FATAL_ERROR_OCCURRED,
+    FATAL_ERROR_OCCURRED,
     MEDIA_PERMISSION_PROMPT_VISIBILITY_CHANGED,
     SUSPEND_DETECTED
 } from './actionTypes';
@@ -37,6 +39,10 @@ export function mediaPermissionPromptVisibilityChanged(isVisible, browser) {
  */
 export function _reloadNow() {
     return (dispatch, getState) => {
+        const { fatalErrorOccurred } = getState()['features/overlay'];
+
+        fatalErrorOccurred && dispatch({ type: CANCEL_FATAL_ERROR_OCCURRED });
+
         const { locationURL } = getState()['features/base/connection'];
 
         logger.info(`Reloading the conference using URL: ${locationURL}`);
@@ -60,5 +66,13 @@ export function _reloadNow() {
 export function suspendDetected() {
     return {
         type: SUSPEND_DETECTED
+    };
+}
+
+export function setFatalErrorOccurred(fatalErrorOccurred, fatalErrorCause) {
+    return {
+        type: FATAL_ERROR_OCCURRED,
+        fatalErrorOccurred,
+        fatalErrorCause
     };
 }

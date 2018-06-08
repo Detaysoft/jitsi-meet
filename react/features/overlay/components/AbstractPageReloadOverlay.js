@@ -7,10 +7,6 @@ import {
     createPageReloadScheduledEvent,
     sendAnalytics
 } from '../../analytics';
-import {
-    isFatalJitsiConferenceError,
-    isFatalJitsiConnectionError
-} from '../../base/lib-jitsi-meet';
 import { randomInt } from '../../base/util';
 
 import { _reloadNow } from '../actions';
@@ -77,15 +73,8 @@ export default class AbstractPageReloadOverlay extends Component<*, *> {
      * {@code false}, otherwise.
      */
     static needsRender(state: Object) {
-        const conferenceError = state['features/base/conference'].error;
-        const configError = state['features/base/config'].error;
-        const connectionError = state['features/base/connection'].error;
-
-        return (
-            (connectionError && isFatalJitsiConnectionError(connectionError))
-                || (conferenceError
-                    && isFatalJitsiConferenceError(conferenceError))
-                || configError);
+        // FIXME Web probably cares only about "Fatal errors"
+        return state['features/overlay'].fatalErrorOccurred;
     }
 
     _interval: ?IntervalID;
@@ -277,9 +266,11 @@ export function abstractMapStateToProps(state: Object) {
     const { error: configError } = state['features/base/config'];
     const { error: connectionError } = state['features/base/connection'];
 
+    // TO BE FIXED - commented out because of some error, but it should be back
+    // like it was
     return {
-        details: connectionError ? connectionError.details : undefined,
-        isNetworkFailure: Boolean(configError || connectionError),
-        reason: (configError || connectionError || conferenceError).message
+        details: undefined,
+        isNetworkFailure: false,
+        reason: 'something wrong'
     };
 }
